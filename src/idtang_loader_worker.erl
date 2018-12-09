@@ -9,7 +9,7 @@
 -module(idtang_loader_worker).
 -behavior(gen_server).
 
--export([start_link/1, do_process/1]).
+-export([start_link/1, do_process/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 -include("otp_types.hrl").
@@ -20,15 +20,15 @@
 start_link(Words) ->
   gen_server:start_link(?MODULE, [Words], []).
 
-do_process(Pid) ->
-  gen_server:cast(Pid, process).
+do_process(Pid, Complete) ->
+  gen_server:cast(Pid, {process, Complete}).
 
 
 %%% gen_server API
 
 -spec init(gs_args()) -> gs_init_reply().
 init([Words]) ->
-  lager:log(info, self(), "some_worker started ~p", [Words]),
+  %lager:log(info, self(), "some_worker started ~p", [Words]),
   {ok, Words}.
 
 
@@ -43,10 +43,10 @@ handle_call(_Any, _From, State) ->
 
 
 -spec handle_cast(gs_request(), gs_state()) -> gs_cast_reply().
-handle_cast(process, State) ->
+handle_cast({process, Complete}, State) ->
 
   Words = process_words(State, maps:new()),
-  idtang_prompt:add_words(Words),
+  idtang_prompt:add_words(Words, Complete),
 
   {stop, normal, State};
 handle_cast(_Any, State) ->
@@ -76,16 +76,7 @@ code_change(_OldVersion, State, _Extra) ->
 process_words([], Result) ->
   Result;
 process_words([Word|Words], Result) ->
-
-  %lager:log(info, self(), is_list(Word)),
-
-  %W1 = binary:replace(Word,[<<"\n">>,<<"\r">>],<<"">>, [global]),
-  W2 = string:lowercase(Word),
-  Key = make_hash(W2),
+  Key = idtang_loader:make_hash(Word),
   R = maps:get(Key, Result, []),
-  NewResult = maps:put(make_hash(W2), [Word|R], Result),
+  NewResult = maps:put(Key, [Word|R], Result),
   process_words(Words, NewResult).
-
-make_hash(Word) ->
-  %Letters = binary_to_list(Word),
-  lists:sort(Word).
