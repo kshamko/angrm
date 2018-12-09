@@ -6,7 +6,7 @@
 -spec(start(term(), term()) -> {ok, pid()}).
 start(_StartType, _StartArgs) ->
   {ok, Pid} = idtang_sup:start_link(),
-  idtang_loader:load_words("./include/words", 20),
+  idtang_loader:load_words("./priv/words", 20),
   lager:log(info, self(), "idtang_app started"),
   {ok, Pid}.
 
