@@ -1,11 +1,3 @@
-%%%-------------------------------------------------------------------
-%%% @author kostik
-%%% @copyright (C) 2018, <COMPANY>
-%%% @doc
-%%%
-%%% @end
-%%% Created : 08. Dec 2018 9:58 PM
-%%%-------------------------------------------------------------------
 -module(idtang_loader_worker_sup).
 
 -behaviour(supervisor).
