@@ -20,7 +20,6 @@ do_process(Pid, Complete) ->
 
 -spec init(gs_args()) -> gs_init_reply().
 init([Words]) ->
-  %lager:log(info, self(), "some_worker started ~p", [Words]),
   {ok, Words}.
 
 
@@ -30,16 +29,13 @@ handle_call({some, _Data}, _From, State) ->
   {reply, Reply, State};
 
 handle_call(_Any, _From, State) ->
-  %lager:error("unknown call ~p in ~p ~n", [Any, ?MODULE]),
   {noreply, State}.
 
 
 -spec handle_cast(gs_request(), gs_state()) -> gs_cast_reply().
 handle_cast({process, Complete}, State) ->
-
   Words = process_words(State, maps:new()),
   idtang_prompt:add_words(Words, Complete),
-
   {stop, normal, State};
 handle_cast(_Any, State) ->
   %lager:error("unknown cast ~p in ~p ~n", [Any, ?MODULE]),
@@ -60,8 +56,6 @@ terminate(_Reason, _State) ->
 -spec code_change(term(), term(), term()) -> gs_code_change_reply().
 code_change(_OldVersion, State, _Extra) ->
   {ok, State}.
-
-
 
 %%% inner functions
 

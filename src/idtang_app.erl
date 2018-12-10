@@ -10,6 +10,7 @@ start(_StartType, _StartArgs) ->
   lager:log(info, self(), "idtang_app started"),
   {ok, Pid}.
 
+
 -spec(stop(term()) -> ok).
 stop(_State) ->
   ok.

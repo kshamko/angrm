@@ -1,11 +1,3 @@
-%%%-------------------------------------------------------------------
-%%% @author kostik
-%%% @copyright (C) 2018, <COMPANY>
-%%% @doc
-%%%
-%%% @end
-%%% Created : 08. Dec 2018 1:42 AM
-%%%-------------------------------------------------------------------
 -module(idtang_prompt).
 -behavior(gen_server).
 
@@ -24,7 +16,7 @@ anagram() ->
   Term = io:get_line("Type a word: "),
 
   case Term of
-    "exit\n" -> exit;
+    "quit\n" -> exit;
     _ ->
       Anagrams = gen_server:call(?MODULE, {anagrams, Term}),
       io:format(Anagrams),
@@ -52,7 +44,9 @@ handle_call(_Any, _From, State) ->
 
 -spec handle_cast(gs_request(), gs_state()) -> gs_cast_reply().
 handle_cast({add_words, Words, _Complete}, State) ->
-  {noreply, maps:merge(Words, State)};
+  M = merge(maps:iterator(Words), State),
+  lager:log(info, self(), "Hashes processed: ~p", [maps:size(M)]),
+  {noreply, M};
 
 handle_cast(_Any, State) ->
   {noreply, State}.
@@ -73,3 +67,15 @@ code_change(_OldVersion, State, _Extra) ->
   {ok, State}.
 
 %%% inner functions
+
+merge(Iterator, BigMap) ->
+  case maps:next(Iterator) of
+    none -> BigMap;
+    {Key, Value, NextIterator} ->
+      BigVal = maps:get(Key, BigMap, []),
+      NewBigVal = BigVal ++ Value,
+      merge(NextIterator, maps:put(Key, NewBigVal, BigMap))
+  end.
+
+
+
