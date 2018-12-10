@@ -24,10 +24,10 @@ in Erlang shell run
 ## Approach
 
 * words from text file are being loaded into *map* datastructure where key is a hash and value is a word itself
-* to search anagram by user input hash function is applied to the word provided, after that hash used to locate anagrams im map. So read operation has O(1) complexity
-* words loaded from file by **idtang_loader** which uses set of workers running under simpe_one_for_one supervisor to generate key-value pairs. Words are sent to workers by batches of 20 items
+* to search anagram by user input, hash function is applied to the word provided, after that hash used to locate anagrams in map. So read operation has O(1) complexity
+* words loaded from file by **idtang_loader** which uses set of workers running under simpe_one_for_one supervisor to generate key-value pairs. Words are sent to workers by batches of 20 items. So load operation time complexity is a bit better than O(n)
 
-## Known Issues
+ ## Known Issues
 * App parameters like batch size and filepath are hardcoded.
 * Lack of tests
 * Fix dialyzer warnings
